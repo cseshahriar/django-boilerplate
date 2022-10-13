@@ -1,2 +1,2 @@
 # onnorokom-pathshala-users
-OnnoRokom Pathshala pet project
+OnnoRokom Pathshala users module
