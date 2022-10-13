@@ -51,6 +51,7 @@ DJANGO_APPS = [
 PLUGIN_APPS = [
     "debug_toolbar",
     "rest_framework",
+    'rest_framework.authtoken',
     "corsheaders",
     "import_export",
 ]
