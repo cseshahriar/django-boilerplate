@@ -9,28 +9,36 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
-from pathlib import Path
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-
+import os
+from app.local_settings import (
+    SECRET_KEY, TEMPLATES_DIR, STATICFILES_DIR, STATIC_DIR, MEDIA_DIR,
+    DEBUG, ENABLE_HTTPS, ALLOWED_HOSTS, INTERNAL_IPS, DB_CONFIG,
+)
+from app.loggings import LOGGING
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$zzl9&@sta7=39_nr%s$d@j&(*9$97*@@cgr++(6h+r(3z=9lj' # Noqa
+SECRET_KEY = SECRET_KEY  # local_settings.py
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = DEBUG  # local_settings.py
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ALLOWED_HOSTS  # local_settings.py
 
+# HTTPS configuration
+if ENABLE_HTTPS:  # local_settings
+    USE_X_FORWARDED_HOST = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+# needed for debug toolbar
+INTERNAL_IPS = INTERNAL_IPS  # local_settings.py
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,14 +47,33 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+# add 3rd party applications here
+PLUGIN_APPS = [
+    "debug_toolbar",
+    "rest_framework",
+    "corsheaders",
+]
+
+# add project applications here
+PROJECT_APPS = [
+    'users.apps.UsersConfig',
+]
+
+# consolidate all installed applications here
+INSTALLED_APPS = DJANGO_APPS + PLUGIN_APPS + PROJECT_APPS
+
+SITE_ID = 1  # Sites framework
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -54,7 +81,7 @@ ROOT_URLCONF = 'app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATES_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,12 +101,8 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': os.getenv('DB_CONFIG', DB_CONFIG)
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -105,19 +128,36 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Dhaka'
 
 USE_I18N = True
 
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
+# Static files (CSS, JavaScript, Images) --------------------------------------
+# https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = STATIC_DIR  # production, don't forget to run collectstatic
+STATICFILES_DIRS = [
+    STATICFILES_DIR,
+]  # development environment
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
+MEDIA_URL = '/media/'
+MEDIA_ROOT = MEDIA_DIR
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ADMIN_URL = 'manage'  # do not include any leading/trailing slashes
+
+# Logging ---------------------------------------------------------------------
+# https://docs.djangoproject.com/en/3.2/topics/logging/
+
+LOGGING = LOGGING  # app/logging.py
+
+# CORS HEADERS
+# CORS_ALLOWED_ORIGINS = CORS_ALLOWED_ORIGINS
+# CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allows from all origins when DEBUG mode on
+CORS_ALLOW_ALL_ORIGINS = True
