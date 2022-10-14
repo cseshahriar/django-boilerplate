@@ -10,9 +10,8 @@ OnnoRokom Pathshala users module
 
 
 1. ### Configure the project
-    - mkdir dir_name
-    - cd dir_name
     - git clone https://github.com/cseshahriar/onnorokom-pathshala-users.git
+    - cd project_dir
     - Create folders for `logs`, and `media`.
     - Copy `local_settings.example` to `local_settings.py`.
     - Update `local_settings.py` with proper `settings`, including `database`.
