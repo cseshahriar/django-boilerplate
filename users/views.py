@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny  # noqa
 
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
+from rest_framework.views import APIView
 
 from .models import User
 from .serializers import UserSerializer
@@ -36,3 +37,15 @@ class CustomAuthToken(ObtainAuthToken):
             'email': user.email,
             'name': full_name
         })
+
+
+class LogoutApiView(APIView):
+    def post(self, request, format=None):
+        # simply delete the token to force a login
+        print(request.user)
+        user_id = request.data.get('user_id', None)
+        if user_id is None:
+            user = User.objects.get(user_id=user_id).first()
+            user.auth_token.delete()
+
+        return Response(status=status.HTTP_200_OK)
