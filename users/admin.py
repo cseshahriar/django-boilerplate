@@ -93,7 +93,7 @@ class UserAdmin(
     """Admin for User model"""
     ordering = ('email', )
     list_display = (
-        'email', 'first_name', 'last_name', 'phone',
+        'id', 'email', 'first_name', 'last_name', 'phone',
         'last_login', 'last_updated', 'date_joined',
         'is_staff', 'is_superuser', 'is_active',
 
