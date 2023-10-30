@@ -154,3 +154,4 @@ LOGGING = LOGGING  # app/logging.py
 CORS_ALLOW_ALL_ORIGINS = True
 
 AUTH_USER_MODEL = 'users.User'
+APP_NAME = 'APP NAME'
